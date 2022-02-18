@@ -7,7 +7,8 @@ namespace ChessCompStompWithHacksLibrary
 	{
 		private static string GetText()
 		{
-			return "";
+			return "The sound effects were created by Kenney (https://www.kenney.nl)" + "\n"
+				+ "and are licensed under Creative Commons Zero.";
 		}
 
 		public static void Render(IDisplayOutput<ChessImage, ChessFont> displayOutput, int width, int height)

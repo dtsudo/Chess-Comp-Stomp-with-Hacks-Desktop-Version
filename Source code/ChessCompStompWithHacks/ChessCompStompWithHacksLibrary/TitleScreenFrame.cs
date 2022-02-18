@@ -19,6 +19,8 @@ namespace ChessCompStompWithHacksLibrary
 
 		private Button creditsButton;
 
+		private string versionString;
+
 		public TitleScreenFrame(GlobalState globalState, SessionState sessionState)
 		{
 			this.globalState = globalState;
@@ -27,14 +29,16 @@ namespace ChessCompStompWithHacksLibrary
 
 			int buttonWidth = 150;
 
+			this.versionString = VersionInfo.GetVersionInfo().Version;
+
 			this.startButton = new Button(
 				x: (ChessCompStompWithHacks.WINDOW_WIDTH - buttonWidth) / 2,
 				y: 300,
 				width: buttonWidth,
 				height: 50,
 				backgroundColor: new DTColor(200, 200, 200),
-				hoverColor: new DTColor(250, 249, 200),
-				clickColor: new DTColor(252, 251, 154),
+				hoverColor: ColorThemeUtil.GetHoverColor(colorTheme: sessionState.GetColorTheme()),
+				clickColor: ColorThemeUtil.GetClickColor(colorTheme: sessionState.GetColorTheme()),
 				text: "Start",
 				textXOffset: 35,
 				textYOffset: 13,
@@ -46,8 +50,8 @@ namespace ChessCompStompWithHacksLibrary
 				width: buttonWidth,
 				height: 50,
 				backgroundColor: new DTColor(200, 200, 200),
-				hoverColor: new DTColor(250, 249, 200),
-				clickColor: new DTColor(252, 251, 154),
+				hoverColor: ColorThemeUtil.GetHoverColor(colorTheme: sessionState.GetColorTheme()),
+				clickColor: ColorThemeUtil.GetClickColor(colorTheme: sessionState.GetColorTheme()),
 				text: "Continue",
 				textXOffset: 15,
 				textYOffset: 13,
@@ -59,21 +63,21 @@ namespace ChessCompStompWithHacksLibrary
 				width: buttonWidth,
 				height: 50,
 				backgroundColor: new DTColor(200, 200, 200),
-				hoverColor: new DTColor(250, 249, 200),
-				clickColor: new DTColor(252, 251, 154),
+				hoverColor: ColorThemeUtil.GetHoverColor(colorTheme: sessionState.GetColorTheme()),
+				clickColor: ColorThemeUtil.GetClickColor(colorTheme: sessionState.GetColorTheme()),
 				text: "Quit",
 				textXOffset: 46,
 				textYOffset: 13,
 				font: ChessFont.ChessFont20Pt);
 
 			this.clearDataButton = new Button(
-				x: globalState.ShowSoundAndMusicVolumePicker ? 160 : 10,
+				x: 160,
 				y: 10,
 				width: 200,
 				height: 31,
 				backgroundColor: new DTColor(200, 200, 200),
-				hoverColor: new DTColor(250, 249, 200),
-				clickColor: new DTColor(252, 251, 154),
+				hoverColor: ColorThemeUtil.GetHoverColor(colorTheme: sessionState.GetColorTheme()),
+				clickColor: ColorThemeUtil.GetClickColor(colorTheme: sessionState.GetColorTheme()),
 				text: "Reset data",
 				textXOffset: 40,
 				textYOffset: 6,
@@ -85,8 +89,8 @@ namespace ChessCompStompWithHacksLibrary
 				width: 100,
 				height: 35,
 				backgroundColor: new DTColor(200, 200, 200),
-				hoverColor: new DTColor(250, 249, 200),
-				clickColor: new DTColor(252, 251, 154),
+				hoverColor: ColorThemeUtil.GetHoverColor(colorTheme: sessionState.GetColorTheme()),
+				clickColor: ColorThemeUtil.GetClickColor(colorTheme: sessionState.GetColorTheme()),
 				text: "Credits",
 				textXOffset: 13,
 				textYOffset: 10,
@@ -113,19 +117,19 @@ namespace ChessCompStompWithHacksLibrary
 					initialSoundVolume: soundOutput.GetSoundVolume(),
 					initialMusicVolume: this.globalState.MusicVolume,
 					elapsedMicrosPerFrame: this.globalState.ElapsedMicrosPerFrame);
-
-			if (this.globalState.ShowSoundAndMusicVolumePicker)
-			{
-				this.volumePicker.ProcessFrame(mouseInput: mouseInput, previousMouseInput: previousMouseInput);
-				soundOutput.SetSoundVolume(volume: this.volumePicker.GetCurrentSoundVolume());
-				this.globalState.MusicVolume = this.volumePicker.GetCurrentMusicVolume();
-			}
+			
+			this.volumePicker.ProcessFrame(mouseInput: mouseInput, previousMouseInput: previousMouseInput);
+			soundOutput.SetSoundVolume(volume: this.volumePicker.GetCurrentSoundVolume());
+			this.globalState.MusicVolume = this.volumePicker.GetCurrentMusicVolume();
 			
 			if (this.sessionState.HasStarted)
 			{
 				bool clickedContinueButton = this.continueButton.ProcessFrame(mouseInput: mouseInput, previousMouseInput: previousMouseInput);
 				if (clickedContinueButton)
 				{
+					this.globalState.SaveData(sessionState: this.sessionState, soundVolume: soundOutput.GetSoundVolume());
+					soundOutput.PlaySound(ChessSound.Click);
+
 					if (this.sessionState.GetGameLogic() == null)
 						return new HackSelectionScreenFrame(globalState: this.globalState, sessionState: this.sessionState);
 					else
@@ -136,26 +140,40 @@ namespace ChessCompStompWithHacksLibrary
 			{
 				bool clickedStartButton = this.startButton.ProcessFrame(mouseInput: mouseInput, previousMouseInput: previousMouseInput);
 				if (clickedStartButton)
+				{
+					this.globalState.SaveData(sessionState: this.sessionState, soundVolume: soundOutput.GetSoundVolume());
+					soundOutput.PlaySound(ChessSound.Click);
 					return new IntroScreenFrame(globalState: this.globalState, sessionState: this.sessionState);
+				}
 			}
 
 			if (!this.globalState.IsWebBrowserVersion)
 			{
 				bool clickedQuitButton = this.quitButton.ProcessFrame(mouseInput: mouseInput, previousMouseInput: previousMouseInput);
 				if (clickedQuitButton)
+				{
+					this.globalState.SaveData(sessionState: this.sessionState, soundVolume: soundOutput.GetSoundVolume());
 					return null;
+				}
 			}
 
 			if (this.sessionState.HasStarted)
 			{
 				bool clickedClearDataButton = this.clearDataButton.ProcessFrame(mouseInput: mouseInput, previousMouseInput: previousMouseInput);
 				if (clickedClearDataButton)
+				{
+					soundOutput.PlaySound(ChessSound.Click);
 					return new ClearDataConfirmationFrame(globalState: this.globalState, sessionState: this.sessionState, underlyingFrame: this);
+				}
 			}
 
 			bool clickedCreditsButton = this.creditsButton.ProcessFrame(mouseInput: mouseInput, previousMouseInput: previousMouseInput);
 			if (clickedCreditsButton)
+			{
+				this.globalState.SaveData(sessionState: this.sessionState, soundVolume: soundOutput.GetSoundVolume());
+				soundOutput.PlaySound(ChessSound.Click);
 				return new CreditsFrame(globalState: this.globalState, sessionState: this.sessionState);
+			}
 
 			if (this.globalState.DebugMode)
 			{
@@ -202,17 +220,14 @@ namespace ChessCompStompWithHacksLibrary
 			displayOutput.DrawText(
 				x: ChessCompStompWithHacks.WINDOW_WIDTH - 42,
 				y: 55,
-				text: "v1.00",
+				text: "v" + this.versionString,
 				font: ChessFont.ChessFont12Pt,
 				color: DTColor.Black());
 
 			this.creditsButton.Render(displayOutput: displayOutput);
-
-			if (this.globalState.ShowSoundAndMusicVolumePicker)
-			{
-				if (this.volumePicker != null)
-					this.volumePicker.Render(displayOutput: displayOutput);
-			}
+			
+			if (this.volumePicker != null)
+				this.volumePicker.Render(displayOutput: displayOutput);
 		}
 
 		public void RenderMusic(IMusicOutput<ChessMusic> musicOutput)

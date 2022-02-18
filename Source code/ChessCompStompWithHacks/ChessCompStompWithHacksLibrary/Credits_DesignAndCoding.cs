@@ -5,6 +5,29 @@ namespace ChessCompStompWithHacksLibrary
 
 	public class Credits_DesignAndCoding
 	{
+		private ColorTheme colorTheme;
+
+		private int height;
+
+		private bool isWebBrowserVersion;
+
+		public Credits_DesignAndCoding(ColorTheme colorTheme, int height, bool isWebBrowserVersion)
+		{
+			this.colorTheme = colorTheme;
+
+			this.height = height;
+
+			this.isWebBrowserVersion = isWebBrowserVersion;
+		}
+		
+		public bool ProcessFrame(
+			IMouse mouseInput,
+			IMouse previousMouseInput,
+			ISoundOutput<ChessSound> soundOutput)
+		{
+			return false;
+		}
+
 		private static string GetWebBrowserVersionText()
 		{
 			return "";
@@ -20,13 +43,13 @@ namespace ChessCompStompWithHacksLibrary
 				+ "MonoGame is licensed under the Microsoft Public License.";
 		}
 
-		public static void Render(IDisplayOutput<ChessImage, ChessFont> displayOutput, int width, int height, bool isWebBrowserVersion)
+		public void Render(IDisplayOutput<ChessImage, ChessFont> displayOutput)
 		{
-			string text = isWebBrowserVersion ? GetWebBrowserVersionText() : GetDesktopVersionText();
+			string text = this.isWebBrowserVersion ? GetWebBrowserVersionText() : GetDesktopVersionText();
 
 			displayOutput.DrawText(
 				x: 10,
-				y: height - 10,
+				y: this.height - 10,
 				text: text,
 				font: ChessFont.ChessFont20Pt,
 				color: DTColor.Black());

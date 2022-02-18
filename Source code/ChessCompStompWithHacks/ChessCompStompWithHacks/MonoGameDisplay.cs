@@ -71,6 +71,16 @@ namespace ChessCompStompWithHacks
 				color: color);
 		}
 
+		public override void TryDrawText(int x, int y, string text, ChessFont font, DTColor color)
+		{
+			this.monoGameDisplayFont.TryDrawText(
+				x: x,
+				y: y,
+				text: text,
+				font: font,
+				color: color);
+		}
+
 		public override int GetWidth(ChessImage image)
 		{
 			return this.monoGameDisplayImages.GetWidth(image: image);

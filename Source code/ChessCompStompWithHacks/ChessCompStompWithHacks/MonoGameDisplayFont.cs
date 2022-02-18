@@ -57,11 +57,17 @@ namespace ChessCompStompWithHacks
 			y = this.windowHeight - y - 1;
 			Vector2 position = new Vector2(x, y);
 
-			spriteBatch.DrawString(
+			this.spriteBatch.DrawString(
 				spriteFont: this.chessFontToSpriteFontMapping[font], 
 				text: text, 
 				position: position, 
 				color: (new Color(r: color.R, g: color.G, b: color.B, alpha: 255)) * (color.Alpha / 255.0f));
+		}
+
+		public void TryDrawText(int x, int y, string text, ChessFont font, DTColor color)
+		{
+			if (this.chessFontToSpriteFontMapping.ContainsKey(font))
+				this.DrawText(x: x, y: y, text: text, font: font, color: color);
 		}
 	}
 }

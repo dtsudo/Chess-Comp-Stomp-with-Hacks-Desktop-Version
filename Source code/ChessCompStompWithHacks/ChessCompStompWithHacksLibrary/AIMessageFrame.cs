@@ -71,8 +71,8 @@ namespace ChessCompStompWithHacksLibrary
 				width: buttonWidth,
 				height: 40,
 				backgroundColor: new DTColor(200, 200, 200),
-				hoverColor: new DTColor(250, 249, 200),
-				clickColor: new DTColor(252, 251, 154),
+				hoverColor: ColorThemeUtil.GetHoverColor(colorTheme: sessionState.GetColorTheme()),
+				clickColor: ColorThemeUtil.GetClickColor(colorTheme: sessionState.GetColorTheme()),
 				text: "OK",
 				textXOffset: 57,
 				textYOffset: 8,
@@ -92,12 +92,18 @@ namespace ChessCompStompWithHacksLibrary
 			ISoundOutput<ChessSound> soundOutput,
 			IMusicProcessing musicProcessing)
 		{
+			ChessMusic music = ChessMusicUtil.GetChessMusic(colorTheme: this.sessionState.GetColorTheme());
+			this.globalState.MusicPlayer.SetMusic(music: music, volume: 100);
+
 			bool isConfirmClicked = this.confirmButton.ProcessFrame(
 				mouseInput: mouseInput,
 				previousMouseInput: previousMouseInput);
-			
+
 			if (isConfirmClicked)
+			{
+				soundOutput.PlaySound(sound: ChessSound.Click);
 				return this.underlyingFrame;
+			}
 			
 			return this;
 		}

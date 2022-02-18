@@ -30,8 +30,8 @@ namespace ChessCompStompWithHacksLibrary
 				width: buttonWidth,
 				height: 50,
 				backgroundColor: new DTColor(200, 200, 200),
-				hoverColor: new DTColor(250, 249, 200),
-				clickColor: new DTColor(252, 251, 154),
+				hoverColor: ColorThemeUtil.GetHoverColor(colorTheme: sessionState.GetColorTheme()),
+				clickColor: ColorThemeUtil.GetClickColor(colorTheme: sessionState.GetColorTheme()),
 				text: "Begin",
 				textXOffset: 38,
 				textYOffset: 13,
@@ -56,18 +56,29 @@ namespace ChessCompStompWithHacksLibrary
 				this.elapsedTimeMicros = TOTAL_TIME_TO_DISPLAY_TEXT + 1;
 
 			if (keyboardInput.IsPressed(Key.Esc) && !previousKeyboardInput.IsPressed(Key.Esc))
+			{
+				soundOutput.PlaySound(ChessSound.Click);
 				return new SettingsMenuFrame(globalState: this.globalState, sessionState: this.sessionState, underlyingFrame: this, showPausedText: false);
+			}
 
-			bool clickedSettingsIcon = this.settingsIcon.ProcessFrame(mouseInput: mouseInput, previousMouseInput: previousMouseInput, ignoreMouse: false, displayProcessing: displayProcessing);
-			if (clickedSettingsIcon)
+			SettingsIcon.SettingsIconStatus settingsIconStatus = this.settingsIcon.ProcessFrame(mouseInput: mouseInput, previousMouseInput: previousMouseInput, ignoreMouse: false, displayProcessing: displayProcessing);
+			
+			if (settingsIconStatus.HasClicked)
+			{
+				soundOutput.PlaySound(ChessSound.Click);
 				return new SettingsMenuFrame(globalState: this.globalState, sessionState: this.sessionState, underlyingFrame: this, showPausedText: false);
+			}
 
 			if (this.elapsedTimeMicros >= TOTAL_TIME_TO_DISPLAY_TEXT)
 			{
 				bool clickedContinueButton = this.continueButton.ProcessFrame(mouseInput: mouseInput, previousMouseInput: previousMouseInput);
 				if (clickedContinueButton)
 				{
-					this.sessionState.StartNewGame();
+					this.sessionState.StartNewSession();
+					ChessMusic music = ChessMusic.Level1;
+					this.globalState.MusicPlayer.SetMusic(music: music, volume: 100);
+					this.globalState.SaveData(sessionState: this.sessionState, soundVolume: soundOutput.GetSoundVolume());
+					soundOutput.PlaySound(ChessSound.Click);
 					return new HackSelectionScreenFrame(globalState: this.globalState, sessionState: this.sessionState);
 				}
 			}
@@ -75,8 +86,12 @@ namespace ChessCompStompWithHacksLibrary
 			if (keyboardInput.IsPressed(Key.Space) && !previousKeyboardInput.IsPressed(Key.Space)
 					|| keyboardInput.IsPressed(Key.Enter) && !previousKeyboardInput.IsPressed(Key.Enter)
 					// occurs after the clickedContinueButton check
-					|| mouseInput.IsLeftMouseButtonPressed() && !previousMouseInput.IsLeftMouseButtonPressed() && !clickedSettingsIcon)
+					|| mouseInput.IsLeftMouseButtonPressed() && !previousMouseInput.IsLeftMouseButtonPressed() && !settingsIconStatus.IsHover)
+			{
+				if (this.elapsedTimeMicros <= TOTAL_TIME_TO_DISPLAY_TEXT)
+					soundOutput.PlaySound(ChessSound.Click);
 				this.elapsedTimeMicros = TOTAL_TIME_TO_DISPLAY_TEXT + 1;
+			}
 			
 			return this;
 		}

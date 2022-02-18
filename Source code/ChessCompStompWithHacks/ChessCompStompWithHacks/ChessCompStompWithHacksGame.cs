@@ -27,12 +27,18 @@ namespace ChessCompStompWithHacks
 		private int fps;
 		private long numberOfElapsedTicks;
 
+		private DisplayLogger displayLogger;
+		private bool shouldRenderDisplayLogger;
+
 		private long ticksForFpsCounter;
 		private int fpsCounter;
 		private int fpsCounterSnapshot;
 
-		public ChessCompStompWithHacksGame(bool debugMode, int fps)
+		public ChessCompStompWithHacksGame(GlobalConfigurationManager.GlobalConfiguration globalConfiguration, IFileIO fileIO)
 		{
+			bool debugMode = globalConfiguration.DebugMode;
+			int fps = globalConfiguration.Fps;
+
 			this.graphics = new GraphicsDeviceManager(this);
 
 			this.Content.RootDirectory = "Content";
@@ -48,9 +54,17 @@ namespace ChessCompStompWithHacks
 
 			IDTLogger logger;
 			if (debugMode)
-				logger = new ConsoleLogger();
+			{
+				this.displayLogger = new DisplayLogger(x: 5, y: 95);
+				logger = this.displayLogger;
+			}
 			else
+			{
+				this.displayLogger = null;
 				logger = new EmptyLogger();
+			}
+
+			this.shouldRenderDisplayLogger = true;
 
 			GlobalState globalState = new GlobalState(
 				fps: fps,
@@ -58,10 +72,11 @@ namespace ChessCompStompWithHacks
 				guidGenerator: new GuidGenerator("2342935728"),
 				logger: logger,
 				timer: new SimpleTimer(),
+				fileIO: fileIO,
 				isWebBrowserVersion: false,
 				debugMode: debugMode,
-				initialMusicVolume: null,
-				showSoundAndMusicVolumePicker: false);
+				useDebugAI: false,
+				initialMusicVolume: null);
 
 			this.frame = ChessCompStompWithHacks.GetFirstFrame(globalState: globalState);
 
@@ -134,6 +149,9 @@ namespace ChessCompStompWithHacks
 				if (this.frame != null)
 					this.monoGameSoundOutput.ProcessFrame();
 
+				if (currentKeyboard.IsPressed(Key.L) && !this.previousKeyboard.IsPressed(Key.L))
+					this.shouldRenderDisplayLogger = !this.shouldRenderDisplayLogger;
+
 				this.previousKeyboard = currentKeyboard;
 				this.previousMouse = currentMouse;
 
@@ -178,6 +196,8 @@ namespace ChessCompStompWithHacks
 			{
 				this.frame.Render(display: this.monoGameDisplay);
 				this.frame.RenderMusic(musicOutput: this.monoGameMusic);
+				if (this.displayLogger != null && this.shouldRenderDisplayLogger)
+					this.displayLogger.Render(displayOutput: this.monoGameDisplay, font: ChessFont.ChessFont14Pt, color: DTColor.Black());
 
 				if (this.debugMode)
 				{

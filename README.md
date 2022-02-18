@@ -33,6 +33,14 @@ The game uses images from Kenney Asset Pack. These images are licensed under Cre
 
 The images of chess pieces were created by Cburnett (https://en.wikipedia.org/wiki/User:Cburnett) and are licensed under the BSD license.
 
+##### Sound effects
+
+The sound effects were created by Kenney (https://www.kenney.nl) and are licensed under Creative Commons Zero.
+
+##### Music
+
+The music tracks were created by Juhani Junkala and are licensed under the CC0 Creative Commons License.
+
 # How to compile the source code
 
 The game is written in C#, so you need to have the .NET SDK installed.

@@ -35,8 +35,8 @@ namespace ChessCompStompWithHacksLibrary
 				width: buttonWidth,
 				height: buttonHeight,
 				backgroundColor: new DTColor(200, 200, 200),
-				hoverColor: new DTColor(250, 249, 200),
-				clickColor: new DTColor(252, 251, 154),
+				hoverColor: ColorThemeUtil.GetHoverColor(colorTheme: sessionState.GetColorTheme()),
+				clickColor: ColorThemeUtil.GetClickColor(colorTheme: sessionState.GetColorTheme()),
 				text: "Yes",
 				textXOffset: 47,
 				textYOffset: 8,
@@ -48,8 +48,8 @@ namespace ChessCompStompWithHacksLibrary
 				width: buttonWidth,
 				height: buttonHeight,
 				backgroundColor: new DTColor(200, 200, 200),
-				hoverColor: new DTColor(250, 249, 200),
-				clickColor: new DTColor(252, 251, 154),
+				hoverColor: ColorThemeUtil.GetHoverColor(colorTheme: sessionState.GetColorTheme()),
+				clickColor: ColorThemeUtil.GetClickColor(colorTheme: sessionState.GetColorTheme()),
 				text: "No",
 				textXOffset: 55,
 				textYOffset: 8,
@@ -58,6 +58,9 @@ namespace ChessCompStompWithHacksLibrary
 
 		public void ProcessExtraTime(int milliseconds)
 		{
+			GameLogic gameLogic = this.sessionState.GetGameLogic();
+			if (gameLogic != null)
+				gameLogic.ProcessExtraTime(milliseconds: milliseconds);
 		}
 
 		public IFrame<ChessImage, ChessFont, ChessSound, ChessMusic> GetNextFrame(
@@ -70,7 +73,10 @@ namespace ChessCompStompWithHacksLibrary
 			IMusicProcessing musicProcessing)
 		{
 			if (keyboardInput.IsPressed(Key.Esc) && !previousKeyboardInput.IsPressed(Key.Esc))
+			{
+				soundOutput.PlaySound(ChessSound.Click);
 				return this.underlyingFrame;
+			}
 			
 			bool isConfirmClicked = this.confirmButton.ProcessFrame(
 				mouseInput: mouseInput,
@@ -83,11 +89,16 @@ namespace ChessCompStompWithHacksLibrary
 			if (isConfirmClicked)
 			{
 				this.sessionState.CompleteGame(didPlayerWin: false);
+				this.globalState.SaveData(sessionState: this.sessionState, soundVolume: soundOutput.GetSoundVolume());
+				soundOutput.PlaySound(ChessSound.Click);
 				return new HackSelectionScreenFrame(globalState: this.globalState, sessionState: this.sessionState);
 			}
 
 			if (isCancelClicked)
+			{
+				soundOutput.PlaySound(ChessSound.Click);
 				return this.underlyingFrame;
+			}
 
 			return this;
 		}

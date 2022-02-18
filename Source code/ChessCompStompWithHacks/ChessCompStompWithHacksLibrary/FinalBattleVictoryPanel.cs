@@ -15,10 +15,12 @@ namespace ChessCompStompWithHacksLibrary
 
 		private Button continueButton;
 
+		private IMouse previousMouseInput;
+
 		private const int WIDTH = 850;
 		private const int HEIGHT = 300;
 
-		public FinalBattleVictoryPanel()
+		public FinalBattleVictoryPanel(ColorTheme colorTheme)
 		{
 			this.x = ChessCompStompWithHacks.WINDOW_WIDTH / 2 - WIDTH / 2;
 			this.y = ChessCompStompWithHacks.WINDOW_HEIGHT / 2 - HEIGHT / 2;
@@ -26,14 +28,16 @@ namespace ChessCompStompWithHacksLibrary
 			this.mouseDragXStart = null;
 			this.mouseDragYStart = null;
 
+			this.previousMouseInput = null;
+
 			this.continueButton = new Button(
 				x: (WIDTH - 150) / 2,
 				y: 37,
 				width: 150,
 				height: 40,
 				backgroundColor: new DTColor(200, 200, 200),
-				hoverColor: new DTColor(250, 249, 200),
-				clickColor: new DTColor(252, 251, 154),
+				hoverColor: ColorThemeUtil.GetHoverColor(colorTheme: colorTheme),
+				clickColor: ColorThemeUtil.GetClickColor(colorTheme: colorTheme),
 				text: "OK",
 				textXOffset: 57,
 				textYOffset: 8,
@@ -56,6 +60,11 @@ namespace ChessCompStompWithHacksLibrary
 
 		public Result ProcessFrame(IMouse mouseInput, IMouse previousMouseInput)
 		{
+			if (this.previousMouseInput != null)
+				previousMouseInput = this.previousMouseInput;
+
+			this.previousMouseInput = new CopiedMouse(mouse: mouseInput);
+
 			int mouseX = mouseInput.GetX();
 			int mouseY = mouseInput.GetY();
 
