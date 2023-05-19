@@ -45,20 +45,16 @@ The music tracks were created by Juhani Junkala and are licensed under the CC0 C
 
 The game is written in C#, so you need to have the .NET SDK installed.
 
-Use the `dotnet publish` command to compile the source code. Note that MonoGame recommends disabling ReadyToRun and disabling tiered compilation for performance reasons. MonoGame also recommends building the project as a self-contained application so that it requires no external dependencies. We also publish the project as a single binary file simply to reduce the number of output files.
+Use the `dotnet publish` command to compile the source code. Note that MonoGame recommends disabling ReadyToRun and disabling tiered compilation for performance reasons. MonoGame also recommends building the project as a self-contained application so that it requires no external dependencies. We also publish the project as a single binary file simply to reduce the number of output files. Note that although `PublishSingleFile` reduces the number of files, there may still be more than one output file; see https://community.monogame.net/t/building-with-publishsinglefile-on-3-8-1-doesnt-create-a-single-executable-file/18626 for details.
 
 Linux:
 
-    cd "Source code/ChessCompStompWithHacks"
-    dotnet publish -c Release -r linux-x64 /p:PublishReadyToRun=false /p:TieredCompilation=false /p:PublishSingleFile=true --self-contained
+    cd "Source code"
+    dotnet publish ChessCompStompWithHacks -c Release -r linux-x64 /p:PublishReadyToRun=false /p:TieredCompilation=false /p:PublishSingleFile=true --self-contained
 
 Windows:
 
-    cd "Source code/ChessCompStompWithHacks"
-    dotnet publish -c Release -r win-x64 /p:PublishReadyToRun=false /p:TieredCompilation=false /p:PublishSingleFile=true --self-contained
+    cd "Source code"
+    dotnet publish ChessCompStompWithHacks -c Release -r win-x64 /p:PublishReadyToRun=false /p:TieredCompilation=false /p:PublishSingleFile=true --self-contained
 
 Lastly, ensure that the `Data` folder is in the same folder as the resulting executable.
-
-##### MonoGame NuGet packages
-
-For convenience, a copy of the relevant MonoGame NuGet packages can be found in the `NugetSource` folder. This folder can be used as a local NuGet package feed.
