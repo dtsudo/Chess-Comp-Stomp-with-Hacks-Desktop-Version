@@ -1,3 +1,9 @@
+# Note
+
+Version 1.03 was released in October 2024; with this release, only the [web version of the codebase](https://github.com/dtsudo/Chess-Comp-Stomp-with-Hacks-Web-Browser-Version) was updated. Desktop builds (via [Flatpak](https://flathub.org/apps/io.github.dtsudo.ChessCompStompWithHacks)) are now created using [Electron](https://www.electronjs.org/).
+
+This git repository contains the MonoGame desktop version, and will remain at version 1.02.
+
 # Overview
 
 In this game, you play against the AI in a chess match. The AI has vast computational resources, but you have hacks. Use your hacks to win!
